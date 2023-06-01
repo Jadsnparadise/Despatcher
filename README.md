@@ -8,7 +8,7 @@ Despatcher do middleware idealizado pela disciplina de programação distribuida
 
 ## Documentação da API
 
-#### Envia publicação para rede social
+#### Envia publicação para a fila no rabbitmq da Rede social escolhida
 
 ```http
   POST /api/publicar
