@@ -19,4 +19,3 @@ Despatcher do middleware idealizado pela disciplina de programação distribuida
 | `api_key` | `string` | **Obrigatório**. Token jwt para autenticação |
 
 Recebe o nome da rede social de destino como parâmetro, assim como os dados a serem publicados.
-
