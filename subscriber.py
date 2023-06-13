@@ -9,7 +9,7 @@ connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
 channel = connection.channel()
 
 # Declara a fila
-channel.queue_declare(queue='minha_fila')
+channel.queue_declare = 'twitter_create_post'
 
 # Declarando exchange
 channel.exchange_declare(
@@ -20,12 +20,12 @@ channel.exchange_declare(
 # Bind de fila 
 channel.queue_bind(
   exchange="direct_exchange",
-  queue='minha_fila',
-  routing_key='create.instagram'
+  queue='twitter_create_post',
+  routing_key='create.twitter'
 )
 
 # Configura a função de callback para receber as mensagens
-channel.basic_consume(queue='minha_fila', on_message_callback=callback, auto_ack=True)
+channel.basic_consume(queue='twitter_create_post', on_message_callback=callback, auto_ack=True)
 
 # Inicia o consumo de mensagens
 channel.start_consuming()
