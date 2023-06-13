@@ -4,7 +4,7 @@ Despatcher do middleware idealizado pela disciplina de programação distribuida
 #
 # Arquitetura
 
-![App Screenshot](https://cdn.discordapp.com/attachments/1110264962665943123/1110531478615502848/Captura_de_Tela_2023-05-23_as_08.35.19.png)
+![App Screenshot](https://cdn.discordapp.com/attachments/1110264962665943123/1113603134388981910/Middleware_Structure.png)
 
 ## Documentação da API
 
