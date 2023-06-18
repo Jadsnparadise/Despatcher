@@ -1,77 +1,134 @@
-from flask import Flask, jsonify, request
+from flask import Flask, request
+from enum import Enum
 import pika
+
+
+class SocialMedia(Enum):
+    TWITTER = 'twitter'
+    LINKEDIN = 'linkedin'
+
 
 app = Flask(__name__)
 
-#Método POST
-@app.route('/pub/create', methods=['POST'])
+
+# Método POST
+@app.route('/api/create', methods=['POST'])
 def createPost():
-  post = request.get_json()
-  mensagem = post['pub']['text']
-  perfil = post['pub']['userId']
-  return create(mensagem, perfil) 
-  
-#Método PUT
-@app.route('/pub/update', methods=['PUT'])
+    try:
+        params = request.get_json()
+        validateCreateUpdateJson(params)
+
+        for socialMedia in SocialMedia:
+            if socialMedia.value in params:
+                create(params, socialMedia.value)
+
+        return "Mensagem enviada para o RabbitMQ"
+    except ValueError as e:
+        return "Erro:" + str(e)
+
+
+# Método PUT
+@app.route('/api/update', methods=['PUT'])
 def updatePost():
-  post = request.get_json()
-  mensagem = post['pub']['text']
-  return update(mensagem) 
+    try:
+        params = request.get_json()
+        validateCreateUpdateJson(params)
 
-#Método DELETE
-@app.route('/pub/delete', methods=['DELETE'])
+        for socialMedia in SocialMedia:
+            if socialMedia.value in params:
+                update(params, params['idPublicação'], socialMedia.value)
+
+        return "Mensagem enviada para o RabbitMQ"
+    except ValueError as e:
+        return "Erro:" + str(e)
+
+
+# Método DELETE
+@app.route('/api/delete', methods=['DELETE'])
 def deletePost():
-  post = request.get_json()
-  mensagem = post['pub']['text']
-  pubId = post['pub']['pubId']
-  return delete(mensagem, pubId) 
+    try:
+        params = request.get_json()
+        validateDeleteJson(params)
 
-#Envia uma mensagem para o rabbitmq para criar um post de acordo com a id do usuário
-def create(mensagem: str, userid: str): 
-  connection = pika.BlockingConnection(pika.ConnectionParameters('localhost')) 
-  channel = connection.channel()
-  routing_key = defineRoutingKey("create")
-  channel.queue_declare(queue=defineQueue("create"))
-  channel.basic_publish(exchange='direct_exchange', routing_key=routing_key, body=mensagem)
-  connection.close()
-  return f"Mensagem '{mensagem}' enviada em routing_key: {routing_key} para criar um post no perfil: {userid}"
+        for socialMedia in SocialMedia:
+            if socialMedia.value in params:
+                delete(params, params['idPublicação'], socialMedia.value)
 
-#Envia uma mensagem para o rabbitmq para atualizar um post de acordo com a id da publicação
-def update(mensagem: str, pubId: str): 
-  connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
-  channel = connection.channel()
-  routing_key = defineRoutingKey("update")
-  channel.queue_declare(queue=defineQueue("update"))
-  channel.basic_publish(exchange='direct_exchange', 
-                        routing_key=routing_key, 
-                        body=mensagem)
-  connection.close()
-  return f"Mensagem '{mensagem}' foi atualizada na publicação: {pubId} usando a routing_key: {routing_key} "
+        return "Mensagem enviada para o RabbitMQ"
+    except ValueError as e:
+        return "Erro:" + str(e)
 
-#Envia uma mensagem para o rabbitmq para deletar um post de acordo com a id da publicação
-def delete(mensagem: str, pubId: str): 
-  connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
-  channel = connection.channel()
-  routing_key = defineRoutingKey("delete")
-  channel.queue_declare(queue=defineQueue("delete"))
-  channel.basic_publish(exchange='direct_exchange',
-                        routing_key=routing_key, 
-                        body=mensagem)
-  connection.close()
-  return f"a mensagem:'{mensagem}' foi deletada em routing_key: {routing_key} para a publicação: {pubId}"
+# Envia uma mensagem para o rabbitmq para criar um post de acordo com a id do usuário
+def create(params: dict, routing: str):
+    mensagem = params['conteudo']
+    connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
+    channel = connection.channel()
+    routing_key = ('create.' + routing)
+    channel.queue_declare(queue="create")
+    channel.basic_publish(exchange='direct_exchange', routing_key=routing_key, body=mensagem)
+    connection.close()
+    return f"Mensagem '{mensagem}' enviada em routing_key: {routing_key} para criar um post no perfil: {params['userId']}"
 
-#Define a routing key da mensagem que será enviada de acordo com o método HTTP chamado
-def defineRoutingKey(method: str):
-  post = request.get_json()
-  routing_key = method + '.' + post['pub']['socialMedia']['socialMediaId']
-  return routing_key
 
-#Define a fila a qual a mensagem será enviada de acordo com o método HTTP chamado
-def defineQueue(method: str):
-  post = request.get_json()
-  queue = method.lower() + '_' + post['pub']['socialMedia']['socialMediaId'] + '_post'
-  return queue
+# Envia uma mensagem para o rabbitmq para atualizar um post de acordo com a id da publicação
+def update(params: dict, pubId: str, routing: str):
+    mensagem = params['conteudo']
+    connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
+    channel = connection.channel()
+    routing_key = ('update.' + routing)
+    channel.queue_declare(queue="update")
+    channel.basic_publish(exchange='direct_exchange',
+                          routing_key=routing_key,
+                          body=mensagem)
+    connection.close()
+    return f"Mensagem '{mensagem}' foi atualizada na publicação: {pubId} usando a routing_key: {routing_key} "
 
-  
+
+# Envia uma mensagem para o rabbitmq para deletar um post de acordo com a id da publicação
+def delete(params: dict, pubId: str, routing: str):
+    mensagem = params['conteudo']
+    connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
+    channel = connection.channel()
+    routing_key = ("delete"+routing)
+    channel.queue_declare(queue="delete")
+    channel.basic_publish(exchange='direct_exchange',
+                          routing_key=routing_key,
+                          body=mensagem)
+    connection.close()
+    return f"a mensagem:'{mensagem}' foi deletada em routing_key: {routing_key} para a publicação: {pubId}"
+
+
+# Validação do JSON de create e update
+def validateCreateUpdateJson(json_data):
+    expected_attributes = ["usuario", "senha", "idPublicação", "twitter", "linkedin", "conteudo", "arquivo"]
+    missing_attributes = []
+
+    for attribute in expected_attributes:
+        if attribute not in json_data:
+            missing_attributes.append(attribute)
+
+    if missing_attributes:
+        error_message = "Os seguintes atributos estão faltando no JSON: {}".format(", ".join(missing_attributes))
+        raise ValueError(error_message)
+
+    return json_data
+
+
+# Validação do JSON de delete
+def validateDeleteJson(json_data):
+    expected_attributes = ["userId", "usuario", "senha", "idPublicação", "twitter", "linkedin"]
+    missing_attributes = []
+
+    for attribute in expected_attributes:
+        if attribute not in json_data:
+            missing_attributes.append(attribute)
+
+    if missing_attributes:
+        error_message = "Os seguintes atributos estão faltando no JSON: {}".format(", ".join(missing_attributes))
+        raise ValueError(error_message)
+
+    return json_data
+
+
 if __name__ == '__main__':
     app.run(debug=True)
