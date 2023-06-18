@@ -55,7 +55,7 @@ Requisições para a API devem seguir os padrões:
                 "twitter":"true",
                 "linkedin":"false",
                 "conteudo":"Conteudo em texto da publicação",
-                "aquivo": "ZmlsZTovLy9ob21lL2FsdW5vL0RvY3VtZW50b3MvcHljaGFybS1jb21tdW5pdHktMjAyMy4xLjIvYmluL3Jlc3RhcnQucHkK"
+                "arquivo": "ZmlsZTovLy9ob21lL2FsdW5vL0RvY3VtZW50b3MvcHljaGFybS1jb21tdW5pdHktMjAyMy4xLjIvYmluL3Jlc3RhcnQucHkK"
             }
 
 + Response 200 (application/json)
@@ -94,7 +94,7 @@ Requisições para a API devem seguir os padrões:
                 "twitter":"true",
                 "linkedin":"false",
                 "conteudo":"Conteudo em texto da publicação",
-                "aquivo": "ZmlsZTovLy9ob21lL2FsdW5vL0RvY3VtZW50b3MvcHljaGFybS1jb21tdW5pdHktMjAyMy4xLjIvYmluL3Jlc3RhcnQucHkK"
+                "arquivo": "ZmlsZTovLy9ob21lL2FsdW5vL0RvY3VtZW50b3MvcHljaGFybS1jb21tdW5pdHktMjAyMy4xLjIvYmluL3Jlc3RhcnQucHkK"
             }
 
 + Response 200 (application/json)
