@@ -1,6 +1,6 @@
 
 # Dispatcher
-Despatcher do middleware idealizado pela disciplina de programação distribuida no periodo letivo de 2023.1
+Dispatcher do middleware idealizado pela disciplina de programação distribuida no periodo letivo de 2023.1
 #
 # Arquitetura
 
@@ -8,7 +8,7 @@ Despatcher do middleware idealizado pela disciplina de programação distribuida
 
 ## Documentação da API
 
-O Despatcher disponibiliza uma API RESTful que permite o acesso aos módulos do sistema.
+O Dispatcher disponibiliza uma API RESTful que permite o acesso aos módulos do sistema.
 
 Recursos disponíveis para acesso via API:
 
@@ -18,7 +18,7 @@ Recursos disponíveis para acesso via API:
 
 
 ## URLs de acesso
-URL local: https://localhost:3060/despatcher
+URL local: https://localhost:3060/dispatcher
 
 URL web (a definir): https://exemplo.com.br/api
 
