@@ -51,7 +51,7 @@ Requisições para a API devem seguir os padrões:
             {
                 "userId": 123,
                 "idPublicação": "5bd96678-8a9b-4332-919b-50597186eedd",
-                "conteudo": "Conteudo em texto da publicação",
+                "conteudo": "Conteudo em texto da publicação"
             }
 
 + Response 200 (application/json)
@@ -83,7 +83,7 @@ Requisições para a API devem seguir os padrões:
             {
                 "userId": 123,
                 "idPublicação":"5bd96678-8a9b-4332-919b-50597186eedd",
-                "conteudo":"Conteudo em texto da publicação",
+                "conteudo":"Conteudo em texto da publicação"
             }
 
 + Response 200 (application/json)

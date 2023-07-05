@@ -1,6 +1,7 @@
 from flask import Flask, request
 from enum import Enum
 import pika
+import requests
 
 
 class SocialMedia(Enum):
@@ -17,9 +18,10 @@ def createPost():
         params = request.get_json()
         validateCreateUpdateJson(params)
 
-        for socialMedia in SocialMedia:
-            if socialMedia.value in params:
-                create(params, socialMedia.value)
+        # for socialMedia in SocialMedia:
+        #     if socialMedia.value in params:
+        #         create(params, socialMedia.value)
+        create(params, "twitter")
 
         return "Mensagem enviada para o RabbitMQ"
     except ValueError as e:
@@ -33,9 +35,10 @@ def updatePost():
         params = request.get_json()
         validateCreateUpdateJson(params)
 
-        for socialMedia in SocialMedia:
-            if socialMedia.value in params:
-                update(params, params["idPublicação"], socialMedia.value)
+        # for socialMedia in SocialMedia:
+        #     if socialMedia.value in params:
+        #         update(params, params["idPublicação"], socialMedia.value)
+        update(params, params["idPublicação"], "twitter")
 
         return "Mensagem enviada para o RabbitMQ"
     except ValueError as e:
@@ -49,9 +52,10 @@ def deletePost():
         params = request.get_json()
         validateDeleteJson(params)
 
-        for socialMedia in SocialMedia:
-            if socialMedia.value in params:
-                delete(params, params["idPublicação"], socialMedia.value)
+        # for socialMedia in SocialMedia:
+        #     if socialMedia.value in params:
+        #         delete(params, params["idPublicação"], socialMedia.value)
+        delete(params, params["idPublicação"], "twitter")
 
         return "Mensagem enviada para o RabbitMQ"
     except ValueError as e:
@@ -60,7 +64,8 @@ def deletePost():
 
 # Envia uma mensagem para o rabbitmq para criar um post de acordo com a id do usuário
 def create(params: dict, routing: str):
-    mensagem = params["conteudo"]
+    # mensagem = params["conteudo"]
+    mensagem = {"mensagem": params["conteudo"], "token": getUserToken(params["userId"])}
     connection = pika.BlockingConnection(pika.ConnectionParameters("localhost"))
     channel = connection.channel()
     routing_key = "create." + routing
@@ -74,7 +79,8 @@ def create(params: dict, routing: str):
 
 # Envia uma mensagem para o rabbitmq para atualizar um post de acordo com a id da publicação
 def update(params: dict, pubId: str, routing: str):
-    mensagem = params["conteudo"]
+    # mensagem = params["conteudo"]
+    mensagem = {"mensagem": params["conteudo"], "token": getUserToken(params["userId"])}
     connection = pika.BlockingConnection(pika.ConnectionParameters("localhost"))
     channel = connection.channel()
     routing_key = "update." + routing
@@ -88,7 +94,8 @@ def update(params: dict, pubId: str, routing: str):
 
 # Envia uma mensagem para o rabbitmq para deletar um post de acordo com a id da publicação
 def delete(params: dict, pubId: str, routing: str):
-    mensagem = params["conteudo"]
+    # mensagem = params["conteudo"]
+    mensagem = {"mensagem": params["conteudo"], "token": getUserToken(params["userId"])}
     connection = pika.BlockingConnection(pika.ConnectionParameters("localhost"))
     channel = connection.channel()
     routing_key = "delete" + routing
@@ -141,6 +148,17 @@ def validateDeleteJson(json_data):
         raise ValueError(error_message)
 
     return json_data
+
+
+# Busca o token da rede social pelo id do usuário
+def getUserToken(userId):
+    url = f"http://34.31.6.152/account-manager/users/{userId}/apps"
+    response = requests.get(url)
+    if response.status_code == 200:
+        data = response.json()
+
+    token = data[0]["socialMedias"][0]["token"]
+    return token
 
 
 if __name__ == "__main__":
