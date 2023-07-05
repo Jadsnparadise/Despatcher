@@ -49,12 +49,13 @@ Requisições para a API devem seguir os padrões:
     + Body
 
             {
-                "usuario":"fulano@teste.com",
-                "senha":"senha@1234",
-                "idPublicação":"5bd96678-8a9b-4332-919b-50597186eedd",
-                "twitter":"true",
-                "linkedin":"false",
-                "conteudo":"Conteudo em texto da publicação",
+                "userId": 123,
+                "usuario": "fulano@teste.com",
+                "senha": "senha@1234",
+                "idPublicação": "5bd96678-8a9b-4332-919b-50597186eedd",
+                "twitter": "true",
+                "linkedin": "false",
+                "conteudo": "Conteudo em texto da publicação",
                 "arquivo": "ZmlsZTovLy9ob21lL2FsdW5vL0RvY3VtZW50b3MvcHljaGFybS1jb21tdW5pdHktMjAyMy4xLjIvYmluL3Jlc3RhcnQucHkK"
             }
 
@@ -69,6 +70,7 @@ Requisições para a API devem seguir os padrões:
     + Body
 
             {
+                "userId": 123,
                 "usuario":"fulano@teste.com",
                 "senha":"senha@1234",
                 "idPublicação":"5bd96678-8a9b-4332-919b-50597186eedd",
@@ -88,6 +90,7 @@ Requisições para a API devem seguir os padrões:
     + Body
 
             {
+                "userId": 123,
                 "usuario":"fulano@teste.com",
                 "senha":"senha@1234",
                 "idPublicação":"5bd96678-8a9b-4332-919b-50597186eedd",
