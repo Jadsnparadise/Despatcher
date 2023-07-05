@@ -5,7 +5,6 @@ import pika
 
 class SocialMedia(Enum):
     TWITTER = "twitter"
-    LINKEDIN = "linkedin"
 
 
 app = Flask(__name__)
@@ -104,13 +103,9 @@ def delete(params: dict, pubId: str, routing: str):
 # Validação do JSON de create e update
 def validateCreateUpdateJson(json_data):
     expected_attributes = [
-        "usuario",
-        "senha",
+        "userId",
         "idPublicação",
-        "twitter",
-        "linkedin",
         "conteudo",
-        "arquivo",
     ]
     missing_attributes = []
 
@@ -131,11 +126,7 @@ def validateCreateUpdateJson(json_data):
 def validateDeleteJson(json_data):
     expected_attributes = [
         "userId",
-        "usuario",
-        "senha",
         "idPublicação",
-        "twitter",
-        "linkedin",
     ]
     missing_attributes = []
 
