@@ -1,5 +1,5 @@
 
-# Despatcher
+# Dispatcher
 Despatcher do middleware idealizado pela disciplina de programação distribuida no periodo letivo de 2023.1
 #
 # Arquitetura
